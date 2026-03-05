@@ -200,5 +200,12 @@ Page({
         console.error('获取菜品失败:', err)
       }
     })
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '美食展览 - 发现更多美味菜谱',
+      path: '/pages/index/index'
+    }
   }
 })
