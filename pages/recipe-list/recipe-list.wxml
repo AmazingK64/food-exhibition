@@ -1,0 +1,62 @@
+<view class="container">
+  <view class="header">
+    <text class="title">菜谱大全</text>
+    <text class="subtitle">程序员做饭指南</text>
+  </view>
+
+  <view class="tabs">
+    <view class="tab {{activeTab === 'difficulty' ? 'active' : ''}}" bindtap="switchTab" data-tab="difficulty">按难度</view>
+    <view class="tab {{activeTab === 'category' ? 'active' : ''}}" bindtap="switchTab" data-tab="category">按类型</view>
+  </view>
+
+  <view class="tab-content">
+    <view wx:if="{{activeTab === 'difficulty'}}" class="difficulty-list">
+      <view class="section-title">选择难度</view>
+      <view class="difficulty-grid">
+        <view class="difficulty-item {{selectedDifficulty === item.level ? 'selected' : ''}}" 
+              wx:for="{{difficultyList}}" 
+              wx:key="level"
+              bindtap="selectDifficulty"
+              data-level="{{item.level}}">
+          <text class="star">{{item.stars}}</text>
+          <text class="label">{{item.label}}</text>
+        </view>
+      </view>
+      <view class="recipe-grid" wx:if="{{currentRecipes.length > 0}}">
+        <view class="recipe-card" 
+              wx:for="{{currentRecipes}}" 
+              wx:key="name"
+              bindtap="onRecipeTap"
+              data-name="{{item.name}}">
+          <text class="recipe-name">{{item.name}}</text>
+          <text class="recipe-difficulty">{{item.difficulty}}星</text>
+        </view>
+      </view>
+      <view wx:else class="empty-tip">请选择难度</view>
+    </view>
+
+    <view wx:if="{{activeTab === 'category'}}" class="category-list">
+      <view class="section-title">选择类型</view>
+      <scroll-view scroll-y class="category-scroll-view">
+        <view class="category-item {{selectedCategory === item ? 'selected' : ''}}" 
+              wx:for="{{categoryList}}" 
+              wx:key="*this"
+              bindtap="selectCategory"
+              data-category="{{item}}">
+          <text class="category-name">{{item}}</text>
+          <text class="category-arrow">></text>
+        </view>
+      </scroll-view>
+      <view class="recipe-grid" wx:if="{{currentRecipes.length > 0 && activeTab === 'category'}}">
+        <view class="recipe-card" 
+              wx:for="{{currentRecipes}}" 
+              wx:key="name"
+              bindtap="onRecipeTap"
+              data-name="{{item.name}}">
+          <text class="recipe-name">{{item.name}}</text>
+          <text class="recipe-difficulty">{{item.difficulty}}星</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

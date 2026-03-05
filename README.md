@@ -14,7 +14,7 @@
 ## 项目结构
 
 ```
-miniprogram/
+food-exhibition/
 ├── assets/           # 静态资源
 │   ├── icons/        # 图标
 │   └── images/       # 图片

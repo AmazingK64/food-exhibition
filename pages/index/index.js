@@ -3,8 +3,9 @@ const config = require('../../config.js')
 Page({
   data: {
     bannerList: [
-      { id: 1, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner1.jpg', title: '新品推荐' },
-      { id: 2, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner2.jpg', title: '特色菜系' }
+      { id: 3, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner3.jpg', title: '厨神进行时' },
+      { id: 1, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner1.jpg', title: '菜谱大全' },
+      { id: 2, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner2.jpg', title: '特色菜系' },
     ],
     categoryList: ['全部', '川菜', '家常菜', '海鲜', '粤菜', '湘菜'],
     activeCategory: '全部',
@@ -94,10 +95,18 @@ Page({
 
   onBannerTap(e) {
     const id = e.currentTarget.dataset.id
-    const title = e.currentTarget.dataset.title
-    const image = e.currentTarget.dataset.image
-    wx.navigateTo({
-      url: '/pages/banner-detail/banner-detail?id=' + id + '&title=' + encodeURIComponent(title) + '&image=' + encodeURIComponent(image)
-    })
+    if (id === 1) {
+      wx.navigateTo({
+        url: '/pages/recipe-list/recipe-list'
+      })
+    } else if (id === 3) {
+      wx.navigateTo({
+        url: '/pages/chef-list/chef-list'
+      })
+    } else {
+      wx.switchTab({
+        url: '/pages/dishes/dishes'
+      })
+    }
   }
 })

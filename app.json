@@ -9,7 +9,9 @@
     "pages/favorites/favorites",
     "pages/banner-detail/banner-detail",
     "pages/chef-list/chef-list",
-    "pages/chef-detail/chef-detail"
+    "pages/chef-detail/chef-detail",
+    "pages/recipe-list/recipe-list",
+    "pages/recipe-detail/recipe-detail"
   ],
   "window": {
     "backgroundTextStyle": "light",
