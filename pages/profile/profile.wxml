@@ -1,6 +1,7 @@
 <view class="container">
   <view class="user-header" bindtap="onAuthorize">
-    <image class="avatar" src="{{userInfo.avatarUrl || '/assets/icons/default-avatar.png'}}"/>
+    <view class="avatar-placeholder" wx:if="{{!userInfo}}">👤</view>
+    <image wx:else class="avatar" src="{{userInfo.avatarUrl}}"/>
     <text class="nickname">{{userInfo.nickName || '点击授权'}}</text>
     <text wx:if="{{!isAuthorized}}" class="auth-tip">未授权</text>
   </view>

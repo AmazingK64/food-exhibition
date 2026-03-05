@@ -1,11 +1,11 @@
 const config = require('../../config.js')
-const dishImages = require('../../data/dish-images.js')
+// const dishImages = require('../../data/dish-images.js')
 
 Page({
   data: {
     bannerList: [
       { id: 3, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner3.jpg', title: '厨神进行时' },
-      // { id: 1, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner1.jpg', title: '菜谱大全' },
+      { id: 1, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner1.jpg', title: '菜谱大全' },
       // { id: 2, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner2.jpg', title: '特色菜系' },
     ],
     categoryList: ['全部', '川菜', '家常菜', '海鲜', '粤菜', '湘菜'],
@@ -147,7 +147,7 @@ Page({
           let promises = []
           
           foods.forEach((food) => {
-            const imageUrl = dishImages[food.name]
+            const imageUrl = dishImages ? dishImages[food.name] : null
             if (imageUrl) {
               totalUpdated++
               promises.push(wx.cloud.callFunction({

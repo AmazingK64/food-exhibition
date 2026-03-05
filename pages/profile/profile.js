@@ -14,14 +14,29 @@ Page({
   },
 
   onLoad() {
-    this.checkAuth()
+    const userInfo = wx.getStorageSync('userInfo')
+    if (userInfo) {
+      this.setData({
+        userInfo: userInfo,
+        isAuthorized: true
+      })
+    }
   },
 
   onShow() {
-    this.checkAuth()
-    if (this.data.isAuthorized) {
+    const userInfo = wx.getStorageSync('userInfo')
+    if (userInfo) {
+      this.setData({
+        userInfo: userInfo,
+        isAuthorized: true
+      })
       this.loadAppointments()
       this.loadFavorites()
+    } else {
+      this.setData({
+        userInfo: null,
+        isAuthorized: false
+      })
     }
   },
 
