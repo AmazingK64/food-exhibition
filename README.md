@@ -48,15 +48,38 @@ miniprogram/
    git clone https://github.com/your-username/food-exhibition.git
    ```
 
-2. 使用微信开发者工具打开项目
+2. 进入项目目录
+   ```bash
+   cd food-exhibition
+   ```
 
 3. 复制配置文件
    ```bash
    cp config.example.js config.js
    cp .env.local.example .env.local
+   cp project.config.json.example project.config.json
+   cp project.private.config.json.example project.private.config.json
    ```
 
-4. 在微信开发者工具中预览
+4. **配置微信开发者工具项目文件**
+
+   项目已提供配置文件示例，复制后即可使用：
+   
+   - `project.config.json` - 微信开发者工具项目配置
+     - 主要配置项说明：
+       - `projectname` - 项目名称，可根据需要修改
+       - `libVersion` - 微信开发者工具基础库版本
+       - `srcMiniprogramRoot` - 小程序源码路径（默认 `miniprogram/`）
+   
+   - `project.private.config.json` - 私有配置文件（可选）
+     - 包含本地开发环境偏好设置
+     - 如无需特殊配置，可保持默认或删除此文件
+
+   **提示**：首次用微信开发者工具打开项目时，也可能会提示需要配置项目信息，届时根据实际情况修改即可。
+
+5. 使用微信开发者工具打开项目
+
+6. 在微信开发者工具中预览和调试
 
 ## 技术栈
 
