@@ -3,6 +3,9 @@ Page({
     activeTab: 'difficulty',
     selectedDifficulty: null,
     selectedCategory: null,
+    searchKeyword: '',
+    searchResult: [],
+    filteredTitle: '',
     difficultyList: [
       { level: 1, stars: '⭐', label: '1星难度' },
       { level: 2, stars: '⭐⭐', label: '2星难度' },
@@ -371,33 +374,62 @@ Page({
   },
 
   onLoad() {
+    this.loadRandomRecipes()
   },
 
-  switchTab(e) {
-    const tab = e.currentTarget.dataset.tab
-    this.setData({ 
-      activeTab: tab,
-      currentRecipes: [],
-      selectedDifficulty: null,
-      selectedCategory: null
+  loadRandomRecipes() {
+    const allRecipes = this.data.allRecipes
+    const shuffled = [...allRecipes].sort(() => Math.random() - 0.5)
+    const random10 = shuffled.slice(0, 10)
+    this.setData({
+      currentRecipes: random10,
+      filteredTitle: '为你推荐'
     })
   },
 
-  selectDifficulty(e) {
-    const level = e.currentTarget.dataset.level
-    const recipes = this.data.allRecipes.filter(item => item.difficulty === level)
-    this.setData({ 
-      selectedDifficulty: level,
-      currentRecipes: recipes
-    })
+  onDifficultyChange(e) {
+    const index = e.detail.value
+    const level = this.data.difficultyList[index].level
+    this.applyFilters({ difficulty: level })
   },
 
-  selectCategory(e) {
-    const category = e.currentTarget.dataset.category
-    const recipes = this.data.allRecipes.filter(item => item.category === category)
-    this.setData({ 
-      selectedCategory: category,
-      currentRecipes: recipes
+  onCategoryChange(e) {
+    const index = e.detail.value
+    const category = this.data.categoryList[index]
+    this.applyFilters({ category: category })
+  },
+
+  onResetFilter() {
+    this.loadRandomRecipes()
+  },
+
+  applyFilters(updates) {
+    let { selectedDifficulty, selectedCategory } = this.data
+    if (updates.difficulty !== undefined) selectedDifficulty = updates.difficulty
+    if (updates.category !== undefined) selectedCategory = updates.category
+
+    let filtered = this.data.allRecipes
+    if (selectedDifficulty) {
+      filtered = filtered.filter(item => item.difficulty === selectedDifficulty)
+    }
+    if (selectedCategory) {
+      filtered = filtered.filter(item => item.category === selectedCategory)
+    }
+
+    let title = ''
+    if (selectedDifficulty && selectedCategory) {
+      title = selectedDifficulty + '星 ' + selectedCategory
+    } else if (selectedDifficulty) {
+      title = selectedDifficulty + '星难度'
+    } else if (selectedCategory) {
+      title = selectedCategory
+    }
+
+    this.setData({
+      selectedDifficulty,
+      selectedCategory,
+      currentRecipes: filtered,
+      filteredTitle: title
     })
   },
 
@@ -405,6 +437,33 @@ Page({
     const name = e.currentTarget.dataset.name
     wx.navigateTo({
       url: '/pages/recipe-detail/recipe-detail?name=' + encodeURIComponent(name)
+    })
+  },
+
+  onSearchInput(e) {
+    this.setData({
+      searchKeyword: e.detail.value
+    })
+    if (e.detail.value === '') {
+      this.setData({
+        searchResult: []
+      })
+    }
+  },
+
+  onSearch() {
+    const keyword = this.data.searchKeyword.trim()
+    if (!keyword) {
+      this.setData({
+        searchResult: []
+      })
+      return
+    }
+    const result = this.data.allRecipes.filter(item => 
+      item.name.toLowerCase().includes(keyword.toLowerCase())
+    )
+    this.setData({
+      searchResult: result
     })
   }
 })

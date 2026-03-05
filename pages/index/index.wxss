@@ -17,6 +17,16 @@
   font-size: 28rpx;
 }
 
+.update-btn {
+  background: #ff6b35;
+  color: #fff;
+  padding: 20rpx;
+  text-align: center;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  font-size: 28rpx;
+}
+
 .banner {
   height: 320rpx;
   border-radius: 16rpx;

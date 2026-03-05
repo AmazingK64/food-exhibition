@@ -4,6 +4,8 @@
     <text class="search-text">搜索菜品...</text>
   </view>
 
+  <view class="update-btn" bindtap="onUpdateImages" wx:if="{{false}}">更新菜品图片</view>
+
   <swiper class="banner" indicator-dots autoplay circular indicator-active-color="#ff6b35">
     <swiper-item wx:for="{{bannerList}}" wx:key="id" bindtap="onBannerTap" data-id="{{item.id}}" data-title="{{item.title}}" data-image="{{item.image}}">
       <image class="banner-image" src="{{item.image}}" mode="aspectFill"/>

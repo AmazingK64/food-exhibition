@@ -1,4 +1,5 @@
 {
+  "lazyCodeLoading": "requiredComponents",
   "pages": [
     "pages/index/index",
     "pages/dishes/dishes",
@@ -32,8 +33,8 @@
         "selectedIconPath": "assets/icons/home-active.png"
       },
       {
-        "pagePath": "pages/dishes/dishes",
-        "text": "菜品",
+        "pagePath": "pages/recipe-list/recipe-list",
+        "text": "菜谱",
         "iconPath": "assets/icons/dish.png",
         "selectedIconPath": "assets/icons/dish-active.png"
       },

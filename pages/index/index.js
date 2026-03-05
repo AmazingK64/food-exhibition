@@ -1,11 +1,12 @@
 const config = require('../../config.js')
+const dishImages = require('../../data/dish-images.js')
 
 Page({
   data: {
     bannerList: [
       { id: 3, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner3.jpg', title: '厨神进行时' },
-      { id: 1, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner1.jpg', title: '菜谱大全' },
-      { id: 2, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner2.jpg', title: '特色菜系' },
+      // { id: 1, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner1.jpg', title: '菜谱大全' },
+      // { id: 2, image: 'https://' + config.cloudbaseId + '.tcb.qcloud.la/assets/images/banner2.jpg', title: '特色菜系' },
     ],
     categoryList: ['全部', '川菜', '家常菜', '海鲜', '粤菜', '湘菜'],
     activeCategory: '全部',
@@ -29,9 +30,15 @@ Page({
       data: { action: 'getFoods', featured: true, limit: 6 },
       success: (res) => {
         if (res.result.success) {
-          this.setData({
-            featuredFoods: res.result.data || []
-          })
+          const foods = (res.result.data || []).map(food => {
+             if (!food.image || food.image === '') {
+               food.image = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'
+             }
+             return food
+           })
+           this.setData({
+             featuredFoods: foods
+           })
         }
       },
       fail: (err) => {
@@ -108,5 +115,90 @@ Page({
         url: '/pages/dishes/dishes'
       })
     }
+  },
+
+  onUpdateImages() {
+    const app = getApp()
+    if (!app.globalData.isAuthorized) {
+      wx.showModal({
+        title: '提示',
+        content: '请先授权登录',
+        confirmText: '去授权',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/profile/profile'
+            })
+          }
+        }
+      })
+      return
+    }
+    
+    wx.showLoading({ title: '更新中...' })
+    
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: { action: 'getFoods', limit: 500 },
+      success: (res) => {
+        if (res.result.success) {
+          const foods = res.result.data || []
+          let totalUpdated = 0
+          let promises = []
+          
+          foods.forEach((food) => {
+            const imageUrl = dishImages[food.name]
+            if (imageUrl) {
+              totalUpdated++
+              promises.push(wx.cloud.callFunction({
+                name: 'foodApi',
+                data: { 
+                  action: 'updateFood', 
+                  id: food._id, 
+                  image: imageUrl 
+                }
+              }))
+            }
+          })
+          
+          if (promises.length > 0) {
+            Promise.all(promises).then(() => {
+              wx.hideLoading()
+              wx.showToast({
+                title: '更新成功！' + totalUpdated + '道菜',
+                icon: 'success'
+              })
+            }).catch((err) => {
+              wx.hideLoading()
+              wx.showToast({
+                title: '更新失败',
+                icon: 'none'
+              })
+              console.error(err)
+            })
+          } else {
+            wx.hideLoading()
+            wx.showToast({
+              title: '没有需要更新的菜品',
+              icon: 'none'
+            })
+          }
+        } else {
+          wx.hideLoading()
+          wx.showToast({
+            title: '获取菜品失败',
+            icon: 'none'
+          })
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        wx.showToast({
+          title: '获取菜品失败',
+          icon: 'none'
+        })
+        console.error('获取菜品失败:', err)
+      }
+    })
   }
 })

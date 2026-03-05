@@ -1,5 +1,7 @@
 # 美食博览会小程序
 
+> ⚠️ **本项目完全由 AI 生成**
+
 微信小程序，用于展示和预约各类美食展览活动。
 
 ## 功能特点
@@ -87,6 +89,11 @@ food-exhibition/
 - JavaScript
 - WXML / WXSS
 
+## 数据来源
+
+内部自带的食谱来源于 [Anduin2017/HowToCook](https://github.com/Anduin2017/HowToCook)，感谢该项目的贡献者！
+
+
 ## 许可证
 
 MIT License - 查看 [LICENSE](LICENSE) 文件了解详情
@@ -94,3 +101,5 @@ MIT License - 查看 [LICENSE](LICENSE) 文件了解详情
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+> **重要提示**：为保持项目的一致性和可维护性，请确保您的改动遵循原有的开发逻辑和代码风格。如有重大架构变更，建议先提交 Issue 讨论后再进行开发。

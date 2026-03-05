@@ -128,6 +128,23 @@ Page({
   },
 
   onEditTap(e) {
+    const app = getApp()
+    if (!app.globalData.isAuthorized) {
+      wx.showModal({
+        title: '提示',
+        content: '请先授权登录',
+        confirmText: '去授权',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/profile/profile'
+            })
+          }
+        }
+      })
+      return
+    }
+    
     const id = e.currentTarget.dataset.id
     const appointment = this.data.appointments.find(a => a._id === id)
     if (appointment) {
@@ -138,6 +155,23 @@ Page({
   },
 
   onRemoveFavorite(e) {
+    const app = getApp()
+    if (!app.globalData.isAuthorized) {
+      wx.showModal({
+        title: '提示',
+        content: '请先授权登录',
+        confirmText: '去授权',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/profile/profile'
+            })
+          }
+        }
+      })
+      return
+    }
+    
     const dishId = e.currentTarget.dataset.id
     wx.showModal({
       title: '提示',
@@ -163,6 +197,23 @@ Page({
   },
 
   onCancelTap(e) {
+    const app = getApp()
+    if (!app.globalData.isAuthorized) {
+      wx.showModal({
+        title: '提示',
+        content: '请先授权登录',
+        confirmText: '去授权',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/profile/profile'
+            })
+          }
+        }
+      })
+      return
+    }
+    
     const id = e.currentTarget.dataset.id
     wx.showModal({
       title: '提示',

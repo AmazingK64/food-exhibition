@@ -88,6 +88,8 @@ Page({
   },
 
   onDeleteImage() {
+    if (!this.checkAuthorize()) return
+    
     const { currentImageIndex, displayImages, dish } = this.data
     if (displayImages.length <= 1) {
       wx.showToast({ title: '至少保留一张图片', icon: 'none' })
@@ -188,6 +190,7 @@ Page({
   },
 
   onUploadImage() {
+    if (!this.checkAuthorize()) return
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],

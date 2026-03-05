@@ -50,6 +50,8 @@ Page({
   },
 
   onRemoveTap(e) {
+    if (!this.checkAuthorize()) return
+    
     const dishId = e.currentTarget.dataset.id
     
     wx.showModal({
@@ -84,5 +86,25 @@ Page({
     wx.navigateTo({
       url: '/pages/dish-detail/dish-detail?id=' + id
     })
+  },
+
+  checkAuthorize() {
+    const app = getApp()
+    if (!app.globalData.isAuthorized) {
+      wx.showModal({
+        title: '提示',
+        content: '请先授权登录',
+        confirmText: '去授权',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/profile/profile'
+            })
+          }
+        }
+      })
+      return false
+    }
+    return true
   }
 })
