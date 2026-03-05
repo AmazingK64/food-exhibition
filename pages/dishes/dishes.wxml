@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="search-bar" bindtap="onSearchTap">
+    <view class="search-icon">🔍</view>
+    <text class="search-text">搜索菜品...</text>
+  </view>
+
+  <view class="main-content">
+    <scroll-view class="category-sidebar" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+      <view 
+        wx:for="{{categoryList}}" 
+        wx:key="*this"
+        class="category-item {{activeCategory === item ? 'active' : ''}}"
+        bindtap="onCategoryTap"
+        data-category="{{item}}">
+        {{item}}
+      </view>
+    </scroll-view>
+
+    <scroll-view class="dish-scroll" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+      <view wx:if="{{loading}}" class="loading">加载中...</view>
+      <view wx:elif="{{filteredFoods.length === 0}}" class="empty">暂无菜品</view>
+      <view wx:else class="dish-list">
+        <view 
+          wx:for="{{filteredFoods}}" 
+          wx:key="_id"
+          class="dish-item"
+          bindtap="onFoodTap"
+          data-id="{{item._id}}">
+          <image class="dish-image" src="{{item.image}}" mode="aspectFill"/>
+          <view class="dish-info">
+            <text class="dish-name">{{item.name}}</text>
+            <text class="dish-desc">{{item.description}}</text>
+            <view class="dish-bottom">
+              <text class="dish-price">¥{{item.price}}</text>
+              <view class="dish-add-btn" catchtap="onAddToCart" data-item="{{item}}">+</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

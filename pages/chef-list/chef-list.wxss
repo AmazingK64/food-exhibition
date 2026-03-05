@@ -1,0 +1,54 @@
+.container {
+  padding: 30rpx;
+  background: #f8f8f8;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.title {
+  display: block;
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 10rpx;
+}
+
+.tips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.tip-card {
+  width: 48%;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tip-icon {
+  font-size: 60rpx;
+  margin-bottom: 16rpx;
+}
+
+.tip-name {
+  font-size: 28rpx;
+  color: #333;
+  text-align: center;
+}

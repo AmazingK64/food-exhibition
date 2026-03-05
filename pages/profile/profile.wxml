@@ -1,0 +1,102 @@
+<view class="container">
+  <view class="user-header" bindtap="onAuthorize">
+    <image class="avatar" src="{{userInfo.avatarUrl || '/assets/icons/default-avatar.png'}}"/>
+    <text class="nickname">{{userInfo.nickName || '点击授权'}}</text>
+    <text wx:if="{{!isAuthorized}}" class="auth-tip">未授权</text>
+  </view>
+
+  <view class="tabs">
+    <view 
+      class="tab-item {{activeTab === 'appointments' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="appointments">
+      我的预约
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'favorites' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="favorites">
+      收藏
+    </view>
+  </view>
+
+  <view wx:if="{{activeTab === 'appointments'}}" class="filter-bar">
+    <picker mode="date" value="{{startDate}}" start="2024-01-01" end="2025-12-31" bindchange="onStartDateChange">
+      <view class="filter-picker">
+        {{startDate || '开始日期'}}
+      </view>
+    </picker>
+    <text class="filter-separator">至</text>
+    <picker mode="date" value="{{endDate}}" start="2024-01-01" end="2025-12-31" bindchange="onEndDateChange">
+      <view class="filter-picker">
+        {{endDate || '结束日期'}}
+      </view>
+    </picker>
+    <view class="filter-btn" bindtap="onFilterConfirm">筛选</view>
+    <view class="filter-btn filter-btn-clear" bindtap="onFilterClear">清除</view>
+  </view>
+
+  <view wx:if="{{!isAuthorized}}" class="auth-required">
+    <text>请先授权登录</text>
+    <view class="btn-authorize" bindtap="onAuthorize">立即授权</view>
+  </view>
+
+  <view wx:elif="{{loading}}" class="loading">加载中...</view>
+  <view wx:elif="{{activeTab === 'appointments' && appointments.length === 0}}" class="empty">
+    <text>暂无预约记录</text>
+  </view>
+  <view wx:elif="{{activeTab === 'favorites' && favorites.length === 0}}" class="empty">
+    <text>暂无收藏</text>
+  </view>
+  
+  <block wx:else>
+    <view wx:if="{{activeTab === 'appointments'}}" class="appointment-list">
+      <view 
+        wx:for="{{appointments}}" 
+        wx:key="_id"
+        class="appointment-card">
+        <view class="appointment-card-header">
+          <text class="appointment-name">{{item.userName}}</text>
+          <text class="appointment-time">{{item.visitDate}} {{item.time}}</text>
+        </view>
+        <view class="appointment-dishes">
+          <view 
+            wx:for="{{item.dishes}}" 
+            wx:for-item="dish" 
+            wx:for-index="dishIndex"
+            wx:key="dishIndex"
+            class="dish-item">
+            <image class="dish-image" src="{{dish.image}}" mode="aspectFill"/>
+            <view class="dish-info">
+              <text class="dish-name">{{dish.name}}</text>
+              <text class="dish-ingredients">{{dish.ingredients ? dish.ingredients.join('、') : ''}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="appointment-card-footer">
+          <text class="status {{getStatusClass(item.status)}}">{{getStatusText(item.status)}}</text>
+          <view wx:if="{{item.status === 'pending' || item.status === 'confirmed'}}" class="appointment-actions">
+            <view class="btn-edit" bindtap="onEditTap" data-id="{{item._id}}">修改</view>
+            <view class="btn-cancel" bindtap="onCancelTap" data-id="{{item._id}}">取消预约</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{activeTab === 'favorites'}}" class="favorites-list">
+      <view 
+        wx:for="{{favorites}}" 
+        wx:key="_id"
+        class="food-card"
+        bindtap="onFoodTap"
+        data-id="{{item.dishId}}">
+        <image class="food-image" src="{{item.dishImage}}" mode="aspectFill"/>
+        <view class="food-info">
+          <text class="food-name">{{item.dishName}}</text>
+          <text class="food-price">¥{{item.dishPrice}}</text>
+        </view>
+        <view class="btn-remove" catchtap="onRemoveFavorite" data-id="{{item.dishId}}">取消收藏</view>
+      </view>
+    </view>
+  </block>
+</view>

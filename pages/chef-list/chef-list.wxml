@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="header">
+    <text class="title">厨神技巧</text>
+    <text class="subtitle">烹饪技巧大百科</text>
+  </view>
+
+  <view class="tips-grid">
+    <view 
+      wx:for="{{tipsList}}" 
+      wx:key="id"
+      class="tip-card"
+      bindtap="onTipTap"
+      data-id="{{item.id}}"
+      data-title="{{item.title}}">
+      <view class="tip-icon">{{item.icon}}</view>
+      <text class="tip-name">{{item.title}}</text>
+    </view>
+  </view>
+</view>

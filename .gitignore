@@ -1,0 +1,9 @@
+.git
+.env.local
+cloudfunctions
+.idea
+.vscode
+.config
+*.log
+project.config.json
+*private.config.json

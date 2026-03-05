@@ -1,0 +1,6 @@
+<view class="container">
+  <view class="content" wx:if="{{content}}">
+    <text class="text-content">{{content}}</text>
+  </view>
+  <view wx:else class="loading">加载中...</view>
+</view>

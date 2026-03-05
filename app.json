@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/dishes/dishes",
+    "pages/dish-detail/dish-detail",
+    "pages/reservation/reservation",
+    "pages/profile/profile",
+    "pages/search/search",
+    "pages/favorites/favorites",
+    "pages/banner-detail/banner-detail",
+    "pages/chef-list/chef-list",
+    "pages/chef-detail/chef-detail"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "菜谱预约",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#ff6b35",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/dishes/dishes",
+        "text": "菜品",
+        "iconPath": "assets/icons/dish.png",
+        "selectedIconPath": "assets/icons/dish-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/icons/profile.png",
+        "selectedIconPath": "assets/icons/profile-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

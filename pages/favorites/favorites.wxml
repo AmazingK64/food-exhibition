@@ -1,0 +1,23 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <view wx:elif="{{favorites.length === 0}}" class="empty">
+    <text>暂无收藏</text>
+  </view>
+  <view wx:else class="favorites-list">
+    <view 
+      wx:for="{{favorites}}" 
+      wx:key="_id"
+      class="favorite-item"
+      bindtap="onFoodTap"
+      data-id="{{item.dishId}}">
+      <image class="favorite-image" src="{{item.dishImage}}" mode="aspectFill"/>
+      <view class="favorite-info">
+        <text class="favorite-name">{{item.dishName}}</text>
+        <view class="favorite-bottom">
+          <text class="favorite-price">¥{{item.dishPrice}}</text>
+          <view class="remove-btn" catchtap="onRemoveTap" data-id="{{item.dishId}}">取消收藏</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,73 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <block wx:else>
+    <view class="image-wrapper">
+      <swiper class="dish-image-swiper" indicator-dots="{{displayImages.length > 1}}" indicator-active-color="#ff6b35" circular bindchange="onImageChange" current="{{currentImageIndex}}">
+        <swiper-item wx:for="{{displayImages}}" wx:key="*this">
+          <image class="dish-image" src="{{item}}" mode="aspectFill"/>
+        </swiper-item>
+      </swiper>
+      <view class="image-nav-btn" bindtap="onChangeImage">
+        <text>{{currentImageIndex + 1}}/{{displayImages.length}}</text>
+      </view>
+      <view class="image-actions">
+        <view class="action-btn" bindtap="onReplaceImage">
+          <text>替换</text>
+        </view>
+        <view class="action-btn delete-btn" bindtap="onDeleteImage" wx:if="{{displayImages.length > 1}}">
+          <text>删除</text>
+        </view>
+      </view>
+      <view class="upload-btn" bindtap="onUploadImage">
+        <text>+ 添加图片</text>
+      </view>
+    </view>
+    
+    <view class="dish-header">
+      <view class="dish-title-row">
+        <text class="dish-name">{{dish.name}}</text>
+        <view class="favorite-btn" catchtap="onFavoriteTap">
+          <text>{{favorited ? '❤️' : '🤍'}}</text>
+        </view>
+      </view>
+      <view class="dish-tags">
+        <text class="tag tag-primary">{{dish.category}}</text>
+        <text class="dish-price">¥{{dish.price}}</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">菜品介绍</text>
+      <text class="dish-desc">{{dish.description}}</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">配料</text>
+      <view class="ingredients-list">
+        <view 
+          wx:for="{{dish.ingredients}}" 
+          wx:key="*this"
+          class="ingredient-item">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">烹饪步骤</text>
+      <view class="steps-list">
+        <view 
+          wx:for="{{dish.steps}}" 
+          wx:key="*this"
+          class="step-item">
+          <view class="step-num">{{index + 1}}</view>
+          <text class="step-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="bottom-bar">
+      <view class="btn btn-primary" bindtap="onReserveTap">立即预约</view>
+    </view>
+  </block>
+</view>

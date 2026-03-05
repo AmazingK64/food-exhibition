@@ -1,0 +1,9 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <block wx:else>
+    <image class="banner-image" src="{{banner.image}}" mode="aspectFill"/>
+    <view class="banner-info">
+      <text class="banner-title">{{banner.title}}</text>
+    </view>
+  </block>
+</view>

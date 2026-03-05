@@ -1,0 +1,55 @@
+<view class="container">
+  <view class="search-bar" bindtap="onSearchTap">
+    <view class="search-icon">🔍</view>
+    <text class="search-text">搜索菜品...</text>
+  </view>
+
+  <swiper class="banner" indicator-dots autoplay circular indicator-active-color="#ff6b35" bindtap="onBannerTap" data-id="{{item.id}}" data-title="{{item.title}}" data-image="{{item.image}}">
+    <swiper-item wx:for="{{bannerList}}" wx:key="id">
+      <image class="banner-image" src="{{item.image}}" mode="aspectFill"/>
+      <view class="banner-title">{{item.title}}</view>
+    </swiper-item>
+  </swiper>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">菜系分类</text>
+    </view>
+    <scroll-view class="category-scroll" scroll-x>
+      <view 
+        wx:for="{{categoryList}}" 
+        wx:key="*this"
+        class="category-item {{activeCategory === item ? 'active' : ''}}"
+        bindtap="onCategoryTap"
+        data-category="{{item}}">
+        {{item}}
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">热门菜品</text>
+      <text class="section-more" bindtap="onMoreTap">更多 ></text>
+    </view>
+    <view wx:if="{{loading}}" class="loading">加载中...</view>
+    <view wx:else class="food-grid">
+      <view 
+        wx:for="{{featuredFoods}}" 
+        wx:key="_id"
+        class="food-card"
+        bindtap="onFoodTap"
+        data-id="{{item._id}}">
+        <image class="food-image" src="{{item.image}}" mode="aspectFill"/>
+        <view class="food-info">
+          <text class="food-name">{{item.name}}</text>
+          <text class="food-desc">{{item.description}}</text>
+          <view class="food-bottom">
+            <text class="food-price">¥{{item.price}}</text>
+            <text class="food-category tag-primary">{{item.category}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

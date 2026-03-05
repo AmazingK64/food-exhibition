@@ -1,0 +1,22 @@
+.container {
+  padding: 30rpx;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.content {
+  padding: 20rpx;
+}
+
+.text-content {
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.loading {
+  text-align: center;
+  padding: 100rpx;
+  color: #999;
+}
