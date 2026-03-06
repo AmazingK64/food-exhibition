@@ -7,7 +7,7 @@
     </view>
   </view>
   
-  <view class="content" wx:if="{{isAuthorized && !loading}}">
+  <view class="content" wx:if="{{isAuthorized && isAdmin && !loading}}">
     <block wx:for="{{content}}" wx:key="index">
       <view wx:if="{{item.type === 'h2'}}" class="h2">{{item.text}}</view>
       <view wx:elif="{{item.type === 'h3'}}" class="h3">{{item.text}}</view>
@@ -25,5 +25,10 @@
       </view>
     </block>
   </view>
+  <view wx:elif="{{isAuthorized && !isAdmin && !loading}}" class="auth-prompt">
+    <view class="auth-icon">🔒</view>
+    <view class="auth-text">仅管理员可见</view>
+  </view>
+  <view wx:elif="{{!isAuthorized}}" class="loading">请先授权登录</view>
   <view wx:else class="loading">加载中...</view>
 </view>

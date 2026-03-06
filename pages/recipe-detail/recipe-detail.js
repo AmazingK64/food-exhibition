@@ -5,13 +5,17 @@ Page({
     difficulty: 0,
     content: [],
     loading: true,
-    isAuthorized: false
+    isAuthorized: false,
+    isAdmin: false
   },
 
   onLoad(options) {
     const userInfo = wx.getStorageSync('userInfo')
+    const isAdmin = wx.getStorageSync('isAdmin') || false
+    
     this.setData({
-      isAuthorized: !!userInfo
+      isAuthorized: !!userInfo,
+      isAdmin: isAdmin
     })
     
     const name = decodeURIComponent(options.name || '')

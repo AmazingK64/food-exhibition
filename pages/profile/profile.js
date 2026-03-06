@@ -13,7 +13,9 @@ Page({
     endDate: '',
     editingAppointment: null,
     avatarGenerateCount: 0,
-    canGenerateAvatar: true
+    canGenerateAvatar: true,
+    tempNickName: '',
+    showSaveBtn: false
   },
 
   onLoad() {
@@ -289,9 +291,21 @@ Page({
   },
 
   onNicknameInput(e) {
-    const { nickName } = e.detail
+    const newValue = e.detail.value
+    this.setData({
+      tempNickName: newValue,
+      showSaveBtn: newValue !== (this.data.userInfo.nickName || '')
+    })
+  },
+
+  onNicknameConfirm() {
+    const nickName = this.data.tempNickName || this.data.userInfo.nickName
     if (nickName && nickName.trim()) {
       this.updateUserInfo({ nickName: nickName.trim() })
+      this.setData({ 
+        tempNickName: '',
+        showSaveBtn: false
+      })
     }
   },
 

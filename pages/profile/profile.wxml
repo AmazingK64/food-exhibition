@@ -26,13 +26,17 @@
     <view class="avatar-tip" wx:elif="{{!isAdmin}}">
       剩余生成次数：{{3 - avatarGenerateCount}}次
     </view>
-    <input 
-      class="nickname-input"
-      type="nickname"
-      value="{{userInfo.nickName || ''}}"
-      placeholder="点击设置昵称"
-      bindnicknamereview="onNicknameInput"
-      open-type="nickname"/>
+    <view class="nickname-section">
+      <input 
+        class="nickname-input"
+        type="nickname"
+        value="{{tempNickName || userInfo.nickName || ''}}"
+        placeholder="点击设置昵称"
+        bindinput="onNicknameInput"
+        bindconfirm="onNicknameConfirm"
+        confirm-type="done"/>
+      <view class="nickname-confirm-btn" bindtap="onNicknameConfirm" wx:if="{{showSaveBtn}}">保存</view>
+    </view>
   </view>
 
   <view class="tabs" wx:if="{{isAuthorized}}">
