@@ -131,7 +131,7 @@ Page({
   },
 
   onMoreTap() {
-    wx.switchTab({
+    wx.navigateTo({
       url: '/pages/dishes/dishes'
     })
   },
@@ -143,7 +143,7 @@ Page({
   onBannerTap(e) {
     const id = e.currentTarget.dataset.id
     if (id === 1) {
-      wx.navigateTo({
+      wx.switchTab({
         url: '/pages/recipe-list/recipe-list'
       })
     } else if (id === 3) {
@@ -151,7 +151,7 @@ Page({
         url: '/pages/chef-list/chef-list'
       })
     } else {
-      wx.switchTab({
+      wx.navigateTo({
         url: '/pages/dishes/dishes'
       })
     }

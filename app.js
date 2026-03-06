@@ -26,7 +26,7 @@ App({
     isAuthorized: false,
     envId: config.envId,
     mode: '审核',
-    auditTime: '2026-03-06 15:00'
+    auditTime: '2026-03-06 17:50'
   },
 
   onShareAppMessage() {

@@ -23,21 +23,7 @@ Page({
   },
 
   onShow() {
-    const userInfo = wx.getStorageSync('userInfo')
-    if (userInfo) {
-      this.setData({
-        userInfo: userInfo,
-        isAuthorized: true
-      })
-      this.loadAppointments()
-      this.loadFavorites()
-    } else {
-      this.setData({
-        userInfo: null,
-        isAuthorized: false,
-        loading: false
-      })
-    }
+    this.loadUserInfo()
   },
 
   onGetUserInfo(e) {
@@ -119,21 +105,11 @@ Page({
     const localUserInfo = wx.getStorageSync('userInfo')
     const avatarGenerateCount = wx.getStorageSync('avatarGenerateCount') || 0
     
-    if (localUserInfo) {
-      this.setData({
-        userInfo: localUserInfo,
-        isAuthorized: true,
-        avatarGenerateCount: avatarGenerateCount
-      })
-      
-      this.fetchUserFromCloud()
-    } else {
-      this.setData({
-        userInfo: { nickName: '', avatarUrl: '' },
-        isAuthorized: false,
-        avatarGenerateCount: avatarGenerateCount
-      })
-    }
+    this.setData({
+      avatarGenerateCount: avatarGenerateCount
+    })
+    
+    this.fetchUserFromCloud()
   },
 
   fetchUserFromCloud() {
@@ -145,17 +121,66 @@ Page({
         if (result && result.success && result.data) {
           const cloudUser = result.data
           const isAdmin = cloudUser.isAdmin || false
+          const nickName = cloudUser.nickName || ''
+          const avatarUrl = cloudUser.avatarUrl || ''
           
           wx.setStorageSync('isAdmin', isAdmin)
           
+          if (nickName || avatarUrl) {
+            const mergedUserInfo = {
+              nickName: nickName,
+              avatarUrl: avatarUrl
+            }
+            wx.setStorageSync('userInfo', mergedUserInfo)
+            
+            this.setData({
+              userInfo: mergedUserInfo,
+              isAuthorized: true,
+              isAdmin: isAdmin,
+              canGenerateAvatar: isAdmin || this.data.avatarGenerateCount < 3
+            })
+          } else {
+            const localUserInfo = wx.getStorageSync('userInfo')
+            this.setData({
+              userInfo: localUserInfo || { nickName: '', avatarUrl: '' },
+              isAuthorized: !!localUserInfo,
+              isAdmin: isAdmin,
+              canGenerateAvatar: isAdmin || this.data.avatarGenerateCount < 3
+            })
+          }
+          
+          this.loadAppointments()
+          this.loadFavorites()
+        } else {
+          const localUserInfo = wx.getStorageSync('userInfo')
           this.setData({
-            isAdmin: isAdmin,
-            canGenerateAvatar: isAdmin || this.data.avatarGenerateCount < 3
+            userInfo: localUserInfo || { nickName: '', avatarUrl: '' },
+            isAuthorized: !!localUserInfo,
+            canGenerateAvatar: this.data.avatarGenerateCount < 3
           })
+          
+          if (localUserInfo) {
+            this.loadAppointments()
+            this.loadFavorites()
+          } else {
+            this.setData({ loading: false })
+          }
         }
       },
       fail: (err) => {
         console.error('获取用户信息失败:', err)
+        const localUserInfo = wx.getStorageSync('userInfo')
+        this.setData({
+          userInfo: localUserInfo || { nickName: '', avatarUrl: '' },
+          isAuthorized: !!localUserInfo,
+          canGenerateAvatar: this.data.avatarGenerateCount < 3,
+          loading: false
+        })
+        
+        if (localUserInfo) {
+          this.loadAppointments()
+          this.loadFavorites()
+        }
       }
     })
   },
