@@ -4,7 +4,7 @@
     <text class="subtitle">程序员做饭指南</text>
   </view>
 
-  <view wx:if="{{isAdmin}}">
+  <view wx:if="{{showContent}}">
     <view class="search-box">
       <input class="search-input" 
              placeholder="搜索菜谱..." 

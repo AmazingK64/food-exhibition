@@ -24,7 +24,9 @@ App({
   globalData: {
     userInfo: null,
     isAuthorized: false,
-    envId: config.envId
+    envId: config.envId,
+    mode: '审核',
+    auditTime: '2026-03-06 15:00'
   },
 
   onShareAppMessage() {
@@ -47,6 +49,25 @@ App({
       this.globalData.userInfo = userInfo
       this.globalData.isAuthorized = true
     }
+  },
+
+  isInAuditWindow() {
+    const mode = this.globalData.mode
+    if (mode !== '审核') {
+      return false
+    }
+    
+    const auditTimeStr = this.globalData.auditTime
+    if (!auditTimeStr) {
+      return false
+    }
+
+    const auditTime = new Date(auditTimeStr).getTime()
+    const now = new Date().getTime()
+    const diff = now - auditTime
+    const thirtyMinutes = 30 * 60 * 1000
+    
+    return diff >= 0 && diff <= thirtyMinutes
   },
 
   getUserProfile(callback) {

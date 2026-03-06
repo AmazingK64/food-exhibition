@@ -7,6 +7,7 @@ Page({
     searchResult: [],
     filteredTitle: '',
     isAdmin: false,
+    showContent: false,
     difficultyList: [
       { level: 1, stars: '⭐', label: '1星难度' },
       { level: 2, stars: '⭐⭐', label: '2星难度' },
@@ -380,6 +381,7 @@ Page({
   },
 
   fetchUserInfo() {
+    const app = getApp()
     wx.cloud.callFunction({
       name: 'foodApi',
       data: { action: 'getUserInfo' },
@@ -388,12 +390,20 @@ Page({
         if (result && result.success && result.data) {
           const isAdmin = result.data.isAdmin || false
           wx.setStorageSync('isAdmin', isAdmin)
-          this.setData({ isAdmin: isAdmin })
+          const inAuditWindow = app.isInAuditWindow()
+          this.setData({ 
+            isAdmin: isAdmin,
+            showContent: isAdmin || !inAuditWindow
+          })
         }
       },
       fail: (err) => {
         const isAdmin = wx.getStorageSync('isAdmin') || false
-        this.setData({ isAdmin: isAdmin })
+        const inAuditWindow = app.isInAuditWindow()
+        this.setData({ 
+          isAdmin: isAdmin,
+          showContent: isAdmin || !inAuditWindow
+        })
       }
     })
   },

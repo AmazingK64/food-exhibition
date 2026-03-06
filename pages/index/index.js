@@ -13,7 +13,8 @@ Page({
     featuredFoods: [],
     loading: true,
     showSwiper: false,
-    isAdmin: false
+    isAdmin: false,
+    showContent: false
   },
 
   onLoad() {
@@ -22,6 +23,7 @@ Page({
   },
 
   fetchUserInfo() {
+    const app = getApp()
     wx.cloud.callFunction({
       name: 'foodApi',
       data: { action: 'getUserInfo' },
@@ -30,12 +32,20 @@ Page({
         if (result && result.success && result.data) {
           const isAdmin = result.data.isAdmin || false
           wx.setStorageSync('isAdmin', isAdmin)
-          this.setData({ isAdmin: isAdmin })
+          const inAuditWindow = app.isInAuditWindow()
+          this.setData({ 
+            isAdmin: isAdmin,
+            showContent: isAdmin || !inAuditWindow
+          })
         }
       },
       fail: (err) => {
         const isAdmin = wx.getStorageSync('isAdmin') || false
-        this.setData({ isAdmin: isAdmin })
+        const inAuditWindow = app.isInAuditWindow()
+        this.setData({ 
+          isAdmin: isAdmin,
+          showContent: isAdmin || !inAuditWindow
+        })
       }
     })
   },

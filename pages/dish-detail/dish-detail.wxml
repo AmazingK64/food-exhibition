@@ -56,7 +56,7 @@
       </view>
     </view>
 
-    <view class="section" wx:if="{{isAdmin}}">
+    <view class="section" wx:if="{{showContent}}">
       <view class="section-header-row">
         <text class="section-title">烹饪步骤</text>
         <view class="ai-generate-btn" bindtap="onGenerateSteps" wx:if="{{!dish.steps || dish.steps.length === 0}}">🤖 AI生成</view>
