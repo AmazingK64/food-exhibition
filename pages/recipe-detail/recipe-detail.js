@@ -1,33 +1,58 @@
 Page({
   data: {
     name: '',
+    category: '',
+    difficulty: 0,
     content: [],
-    loading: true
+    loading: true,
+    isAuthorized: false
   },
 
   onLoad(options) {
+    const userInfo = wx.getStorageSync('userInfo')
+    this.setData({
+      isAuthorized: !!userInfo
+    })
+    
     const name = decodeURIComponent(options.name || '')
     wx.setNavigationBarTitle({ title: name })
     this.setData({ name })
-    this.loadRecipe(name)
+    
+    if (userInfo) {
+      this.loadRecipe(name)
+    }
   },
 
   loadRecipe(name) {
-    const recipeData = require('../../data/recipe-data.js')
-    const recipe = recipeData[name]
-    
-    if (recipe && recipe.content) {
-      const parsedContent = this.parseContent(recipe.content)
-      this.setData({ 
-        content: parsedContent,
-        loading: false 
-      })
-    } else {
-      this.setData({ 
-        content: [{ type: 'p', text: '暂未找到该菜谱的详细做法' }],
-        loading: false 
-      })
-    }
+    this.setData({ loading: true })
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: { action: 'getRecipeDetail', name: name },
+      success: (res) => {
+        if (res.result && res.result.data) {
+          const recipe = res.result.data
+          const parsedContent = this.parseContent(recipe.content)
+          this.setData({
+            category: recipe.category || '',
+            difficulty: recipe.difficulty || 0,
+            content: parsedContent,
+            loading: false
+          })
+        } else {
+          this.setData({
+            content: [{ type: 'p', text: '暂未找到该菜谱的详细做法' }],
+            loading: false
+          })
+        }
+      },
+      fail: (err) => {
+        console.error('加载菜谱失败:', err)
+        this.setData({
+          content: [{ type: 'p', text: '加载失败，请稍后重试' }],
+          loading: false
+        })
+      }
+    })
   },
 
   getAllRecipes() {

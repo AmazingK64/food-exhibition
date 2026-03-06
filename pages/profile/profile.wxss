@@ -14,6 +14,32 @@
   margin-bottom: 20rpx;
 }
 
+.avatar-wrapper {
+  position: relative;
+  margin-bottom: 20rpx;
+}
+
+.avatar-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+}
+
+.avatar-tip {
+  text-align: center;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
 .avatar-placeholder {
   width: 160rpx;
   height: 160rpx;
@@ -32,11 +58,94 @@
   font-weight: bold;
 }
 
+.nickname-input {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  background: transparent;
+  border: none;
+  width: 300rpx;
+}
+
+.nickname-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .auth-tip {
   font-size: 24rpx;
   color: #fff;
   opacity: 0.8;
   margin-top: 8rpx;
+}
+
+.auth-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 0;
+}
+
+.auth-btn {
+  margin-top: 30rpx;
+  padding: 20rpx 60rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  border: none;
+  line-height: normal;
+}
+
+.auth-btn::after {
+  border: none;
+}
+
+.auth-edit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.avatar-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: normal;
+}
+
+.avatar-btn::after {
+  border: none;
+}
+
+.auth-avatar-btn {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-avatar-btn::after {
+  border: none;
+}
+
+.auth-avatar-placeholder {
+  color: #fff;
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.edit-tip {
+  font-size: 24rpx;
+  color: #fff;
+  opacity: 0.8;
+  margin-top: 8rpx;
+  text-decoration: underline;
 }
 
 .tabs {
@@ -315,4 +424,19 @@
   color: #666;
   border-radius: 30rpx;
   font-size: 24rpx;
+}
+
+.init-data-section {
+  padding: 40rpx 30rpx;
+  text-align: center;
+}
+
+.init-data-btn {
+  display: inline-block;
+  padding: 20rpx 60rpx;
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  color: #fff;
+  border-radius: 50rpx;
+  font-size: 28rpx;
+  font-weight: bold;
 }

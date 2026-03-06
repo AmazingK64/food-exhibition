@@ -11,7 +11,8 @@ Page({
     categoryList: ['全部', '川菜', '家常菜', '海鲜', '粤菜', '湘菜'],
     activeCategory: '全部',
     featuredFoods: [],
-    loading: true
+    loading: true,
+    showSwiper: false
   },
 
   onLoad() {
@@ -19,7 +20,11 @@ Page({
   },
 
   onShow() {
-    this.setData({ activeCategory: '全部' })
+    const app = getApp()
+    this.setData({ 
+      activeCategory: '全部',
+      showSwiper: app.globalData.isAuthorized
+    })
     this.loadFoods()
   },
 
@@ -98,6 +103,10 @@ Page({
     wx.switchTab({
       url: '/pages/dishes/dishes'
     })
+  },
+
+  showSwiper() {
+    this.setData({ showSwiper: true })
   },
 
   onBannerTap(e) {

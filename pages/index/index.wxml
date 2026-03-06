@@ -6,7 +6,7 @@
 
   <view class="update-btn" bindtap="onUpdateImages" wx:if="{{false}}">更新菜品图片</view>
 
-  <swiper class="banner" indicator-dots autoplay circular indicator-active-color="#ff6b35">
+  <swiper class="banner" indicator-dots autoplay circular indicator-active-color="#ff6b35" wx:if="{{showSwiper}}">
     <swiper-item wx:for="{{bannerList}}" wx:key="id" bindtap="onBannerTap" data-id="{{item.id}}" data-title="{{item.title}}" data-image="{{item.image}}">
       <image class="banner-image" src="{{item.image}}" mode="aspectFill"/>
       <view class="banner-title">{{item.title}}</view>
@@ -14,8 +14,9 @@
   </swiper>
 
   <view class="section">
-    <view class="section-header">
+    <view class="section-header" bindtap="showSwiper">
       <text class="section-title">菜系分类</text>
+      <text class="section-more" bindtap="onMoreTap">更多 ></text>
     </view>
     <scroll-view class="category-scroll" scroll-x>
       <view 
@@ -30,9 +31,8 @@
   </view>
 
   <view class="section">
-    <view class="section-header">
+    <view class="section-header" wx:if="{{false}}">
       <text class="section-title">热门菜品</text>
-      <text class="section-more" bindtap="onMoreTap">更多 ></text>
     </view>
     <view wx:if="{{loading}}" class="loading">加载中...</view>
     <view wx:else class="food-grid">

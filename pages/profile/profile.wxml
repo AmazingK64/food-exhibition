@@ -1,12 +1,41 @@
 <view class="container">
-  <view class="user-header" bindtap="onAuthorize">
-    <view class="avatar-placeholder" wx:if="{{!userInfo}}">👤</view>
-    <image wx:else class="avatar" src="{{userInfo.avatarUrl}}"/>
-    <text class="nickname">{{userInfo.nickName || '点击授权'}}</text>
-    <text wx:if="{{!isAuthorized}}" class="auth-tip">未授权</text>
+  <view class="user-header" wx:if="{{!isAuthorized}}">
+    <button class="auth-avatar-btn" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">
+      <view class="auth-avatar-placeholder">点击授权</view>
+    </button>
   </view>
 
-  <view class="tabs">
+  <view class="user-header" wx:else>
+    <view class="avatar-wrapper">
+       <image 
+         class="avatar" 
+         src="{{userInfo.avatarUrl || '/assets/icons/default-avatar.png'}}" 
+         mode="aspectFill"
+         bindtap="onAvatarTap"
+         open-type="chooseAvatar"/>
+       <view class="avatar-edit" bindtap="onGenerateAvatar" wx:if="{{canGenerateAvatar}}">
+         <text>🎨</text>
+       </view>
+       <view class="avatar-edit" bindtap="onGenerateAvatar" wx:else>
+         <text>✏️</text>
+       </view>
+     </view>
+    <view class="avatar-tip" wx:if="{{!isAdmin && avatarGenerateCount >= 3}}">
+      已用完3次生成次数
+    </view>
+    <view class="avatar-tip" wx:elif="{{!isAdmin}}">
+      剩余生成次数：{{3 - avatarGenerateCount}}次
+    </view>
+    <input 
+      class="nickname-input"
+      type="nickname"
+      value="{{userInfo.nickName || ''}}"
+      placeholder="点击设置昵称"
+      bindnicknamereview="onNicknameInput"
+      open-type="nickname"/>
+  </view>
+
+  <view class="tabs" wx:if="{{isAuthorized}}">
     <view 
       class="tab-item {{activeTab === 'appointments' ? 'active' : ''}}"
       bindtap="onTabChange"
@@ -37,7 +66,7 @@
     <view class="filter-btn filter-btn-clear" bindtap="onFilterClear">清除</view>
   </view>
 
-  <view wx:if="{{!isAuthorized}}" class="auth-required">
+  <view wx:if="{{false}}" class="auth-required">
     <text>请先授权登录</text>
     <view class="btn-authorize" bindtap="onAuthorize">立即授权</view>
   </view>
@@ -100,4 +129,12 @@
       </view>
     </view>
   </block>
+
+  <view class="init-data-section" wx:if="{{false}}">
+    <view class="init-data-btn" bindtap="onInitDishData">初始化菜品数据</view>
+  </view>
+
+  <view class="init-data-section" wx:if="{{false}}">
+    <view class="init-data-btn" bindtap="onClearData">清空用户数据</view>
+  </view>
 </view>

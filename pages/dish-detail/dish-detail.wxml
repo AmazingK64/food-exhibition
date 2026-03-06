@@ -21,6 +21,9 @@
       <view class="upload-btn" bindtap="onUploadImage">
         <text>+ 添加图片</text>
       </view>
+      <view class="ai-image-btn" bindtap="onGenerateImage">
+        <text>🎨 AI 生成图片</text>
+      </view>
     </view>
     
     <view class="dish-header">
@@ -54,8 +57,12 @@
     </view>
 
     <view class="section">
-      <text class="section-title">烹饪步骤</text>
-      <view class="steps-list">
+      <view class="section-header-row">
+        <text class="section-title">烹饪步骤</text>
+        <view class="ai-generate-btn" bindtap="onGenerateSteps" wx:if="{{!dish.steps || dish.steps.length === 0}}">🤖 AI生成</view>
+        <view class="ai-generate-btn" bindtap="onGenerateSteps" wx:if="{{dish.steps && dish.steps.length > 0}}">🤖 重新生成</view>
+      </view>
+      <view class="steps-list" wx:if="{{dish.steps && dish.steps.length > 0}}">
         <view 
           wx:for="{{dish.steps}}" 
           wx:key="*this"

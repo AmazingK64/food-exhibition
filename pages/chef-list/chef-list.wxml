@@ -7,10 +7,10 @@
   <view class="tips-grid">
     <view 
       wx:for="{{tipsList}}" 
-      wx:key="id"
+      wx:key="_id"
       class="tip-card"
       bindtap="onTipTap"
-      data-id="{{item.id}}"
+      data-id="{{item.chefId}}"
       data-title="{{item.title}}">
       <view class="tip-icon">{{item.icon}}</view>
       <text class="tip-name">{{item.title}}</text>

@@ -87,6 +87,78 @@ Page({
     })
   },
 
+  async onGenerateSteps() {
+    const { dish } = this.data
+    if (!dish || !dish.name) {
+      wx.showToast({ title: '菜品信息加载中', icon: 'none' })
+      return
+    }
+
+    if (!wx.cloud || !wx.cloud.extend || !wx.cloud.extend.AI) {
+      wx.showToast({ title: '当前基础库不支持AI', icon: 'none' })
+      return
+    }
+
+    wx.showLoading({ title: 'AI生成中...', mask: true })
+
+    try {
+      const model = wx.cloud.extend.AI.createModel("hunyuan-exp")
+      const prompt = `请为菜品"${dish.name}"生成烹饪步骤。需要考虑以下食材：${(dish.ingredients || []).join('、')}。
+
+请按照以下JSON格式返回烹饪步骤（只需返回JSON，不要其他内容）：
+{
+  "steps": ["步骤1描述", "步骤2描述", "步骤3描述"],
+  "tips": ["小贴士1", "小贴士2"]
+}`
+
+      const that = this
+      let fullText = ''
+
+      const res = await model.streamText({
+        data: {
+          model: "hunyuan-turbos-latest",
+          messages: [
+            { role: "user", content: prompt }
+          ]
+        }
+      })
+
+      for await (let str of res.textStream) {
+        fullText += str
+      }
+
+      wx.hideLoading()
+
+      const jsonMatch = fullText.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0])
+        const steps = parsed.steps || []
+        if (steps.length > 0) {
+          that.setData({
+            'dish.steps': steps
+          })
+          wx.showToast({ title: '生成成功', icon: 'success' })
+        } else {
+          wx.showToast({ title: '未能生成步骤', icon: 'none' })
+        }
+      } else {
+        const lines = fullText.split('\n').filter(s => s.trim() && s.length > 5)
+        if (lines.length > 0) {
+          that.setData({
+            'dish.steps': lines.slice(0, 10)
+          })
+          wx.showToast({ title: '生成成功', icon: 'success' })
+        } else {
+          wx.showToast({ title: '未能生成步骤', icon: 'none' })
+        }
+      }
+    } catch (err) {
+      wx.hideLoading()
+      console.error('AI生成失败:', err)
+      wx.showToast({ title: '生成失败: ' + (err.message || '未知错误'), icon: 'none', duration: 3000 })
+    }
+  },
+
   onDeleteImage() {
     if (!this.checkAuthorize()) return
     
@@ -104,6 +176,54 @@ Page({
           const newImages = displayImages.filter((_, index) => index !== currentImageIndex)
           this.updateDishImages(newImages, currentImageIndex > 0 ? currentImageIndex - 1 : 0)
         }
+      }
+    })
+  },
+
+  onGenerateImage() {
+    console.log('AI生成图片按钮点击')
+    const { dish, uploading } = this.data
+    console.log('dish:', dish)
+    console.log('uploading:', uploading)
+    
+    if (!dish || !dish.name) {
+      wx.showToast({ title: '菜品信息加载中', icon: 'none' })
+      return
+    }
+    if (uploading) return
+
+    const prompt = `一道美味的${dish.category || '家常'}菜${dish.name}，详细做法，美食摄影，诱人食欲，高清图片，真实食材，专业厨艺`
+    console.log('prompt:', prompt)
+
+    this.setData({ uploading: true })
+    wx.showLoading({ title: 'AI 正在生成图片...' })
+
+    wx.cloud.callFunction({
+      name: 'generateImage-XuMMNR',
+      data: { prompt: prompt },
+      success: (res) => {
+        console.log('生成成功:', res)
+        wx.hideLoading()
+        const result = res.result
+
+        if (result && result.success && result.imageUrl) {
+          const newImageUrl = result.imageUrl
+          const { displayImages } = this.data
+          const newImages = [newImageUrl, ...displayImages]
+          
+          this.updateDishImages(newImages, 0)
+          this.setData({ uploading: false })
+          wx.showToast({ title: '生成并保存成功！', icon: 'success' })
+        } else {
+          this.setData({ uploading: false })
+          wx.showToast({ title: result?.message || '生成失败', icon: 'none' })
+        }
+      },
+      fail: (err) => {
+        console.error('生成图片失败:', err)
+        wx.hideLoading()
+        this.setData({ uploading: false })
+        wx.showToast({ title: '生成失败：' + (err.errMsg || '未知错误'), icon: 'none', duration: 3000 })
       }
     })
   },

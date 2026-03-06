@@ -378,12 +378,32 @@ Page({
   },
 
   loadRandomRecipes() {
-    const allRecipes = this.data.allRecipes
-    const shuffled = [...allRecipes].sort(() => Math.random() - 0.5)
-    const random10 = shuffled.slice(0, 10)
-    this.setData({
-      currentRecipes: random10,
-      filteredTitle: '为你推荐'
+    this.setData({ loading: true })
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: { action: 'getRecipeList' },
+      success: (res) => {
+        console.log('getRecipeList result:', res)
+        if (res.result && res.result.data) {
+          const allRecipes = res.result.data
+          console.log('Total recipes:', allRecipes.length)
+          const shuffled = [...allRecipes].sort(() => Math.random() - 0.5)
+          const random10 = shuffled.slice(0, 10)
+          this.setData({
+            currentRecipes: random10,
+            filteredTitle: '为你推荐',
+            allRecipes: allRecipes,
+            loading: false
+          })
+        } else {
+          console.log('No data or error:', res.result)
+          this.setData({ loading: false })
+        }
+      },
+      fail: (err) => {
+        console.error('加载菜谱失败:', err)
+        this.setData({ loading: false })
+      }
     })
   },
 

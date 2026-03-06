@@ -1,5 +1,13 @@
 <view class="container">
-  <view class="content" wx:if="{{!loading}}">
+  <view class="header">
+    <view class="title">{{name}}</view>
+    <view class="meta">
+      <text class="category">{{category}}</text>
+      <text class="difficulty">难度: {{difficulty}}</text>
+    </view>
+  </view>
+  
+  <view class="content" wx:if="{{isAuthorized && !loading}}">
     <block wx:for="{{content}}" wx:key="index">
       <view wx:if="{{item.type === 'h2'}}" class="h2">{{item.text}}</view>
       <view wx:elif="{{item.type === 'h3'}}" class="h3">{{item.text}}</view>

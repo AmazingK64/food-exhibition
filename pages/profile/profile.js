@@ -4,23 +4,20 @@ Page({
   data: {
     userInfo: null,
     isAuthorized: false,
+    isAdmin: false,
     appointments: [],
     favorites: [],
     loading: true,
     activeTab: 'appointments',
     startDate: '',
     endDate: '',
-    editingAppointment: null
+    editingAppointment: null,
+    avatarGenerateCount: 0,
+    canGenerateAvatar: true
   },
 
   onLoad() {
-    const userInfo = wx.getStorageSync('userInfo')
-    if (userInfo) {
-      this.setData({
-        userInfo: userInfo,
-        isAuthorized: true
-      })
-    }
+    this.loadUserInfo()
   },
 
   onShow() {
@@ -35,9 +32,130 @@ Page({
     } else {
       this.setData({
         userInfo: null,
-        isAuthorized: false
+        isAuthorized: false,
+        loading: false
       })
     }
+  },
+
+  onGetUserInfo(e) {
+    if (e.detail.errMsg.indexOf('ok') === -1) {
+      wx.showToast({ title: '授权失败', icon: 'none' })
+      return
+    }
+    
+    const userInfo = e.detail.userInfo
+    wx.setStorageSync('userInfo', userInfo)
+    
+    this.setData({
+      userInfo: userInfo,
+      isAuthorized: true
+    })
+    
+    this.saveUserToCloud(userInfo)
+    
+    wx.showLoading({ title: '正在生成头像...' })
+    
+    const nickName = userInfo.nickName || '用户'
+    const prompt = `一个可爱的动漫风格头像，年轻人头像，简约风格，精致五官，${nickName}的头像，清晰面部，干净背景，高质量`
+    
+    const isAdmin = wx.getStorageSync('isAdmin') || false
+    const avatarGenerateCount = wx.getStorageSync('avatarGenerateCount') || 0
+    
+    wx.cloud.callFunction({
+      name: 'generateImage-XuMMNR',
+      data: { prompt: prompt },
+      success: (res) => {
+        const result = res.result
+        
+        if (result && result.success && result.imageUrl) {
+          const newCount = isAdmin ? 0 : avatarGenerateCount + 1
+          wx.setStorageSync('avatarGenerateCount', newCount)
+          
+          this.setData({
+            avatarGenerateCount: newCount,
+            canGenerateAvatar: isAdmin || newCount < 3
+          })
+          
+          this.updateUserInfo({ avatarUrl: result.imageUrl })
+          wx.hideLoading()
+          wx.showToast({ title: '授权成功，头像已生成', icon: 'success' })
+        } else {
+          wx.hideLoading()
+          wx.showToast({ title: '授权成功', icon: 'success' })
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        console.error('生成头像失败:', err)
+        wx.showToast({ title: '授权成功', icon: 'success' })
+      }
+    })
+    
+    this.loadAppointments()
+    this.loadFavorites()
+  },
+
+  saveUserToCloud(userInfo) {
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: {
+        action: 'setUserInfo',
+        nickName: userInfo.nickName,
+        avatarUrl: userInfo.avatarUrl
+      },
+      success: (res) => {
+        console.log('用户信息已保存到云端', res)
+      },
+      fail: (err) => {
+        console.error('保存用户信息到云端失败:', err)
+      }
+    })
+  },
+
+  loadUserInfo() {
+    const localUserInfo = wx.getStorageSync('userInfo')
+    const avatarGenerateCount = wx.getStorageSync('avatarGenerateCount') || 0
+    
+    if (localUserInfo) {
+      this.setData({
+        userInfo: localUserInfo,
+        isAuthorized: true,
+        avatarGenerateCount: avatarGenerateCount
+      })
+      
+      this.fetchUserFromCloud()
+    } else {
+      this.setData({
+        userInfo: { nickName: '', avatarUrl: '' },
+        isAuthorized: false,
+        avatarGenerateCount: avatarGenerateCount
+      })
+    }
+  },
+
+  fetchUserFromCloud() {
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: { action: 'getUserInfo' },
+      success: (res) => {
+        const result = res.result
+        if (result && result.success && result.data) {
+          const cloudUser = result.data
+          const isAdmin = cloudUser.isAdmin || false
+          
+          wx.setStorageSync('isAdmin', isAdmin)
+          
+          this.setData({
+            isAdmin: isAdmin,
+            canGenerateAvatar: isAdmin || this.data.avatarGenerateCount < 3
+          })
+        }
+      },
+      fail: (err) => {
+        console.error('获取用户信息失败:', err)
+      }
+    })
   },
 
   checkAuth() {
@@ -50,19 +168,160 @@ Page({
   },
 
   onAuthorize() {
-    if (this.data.isAuthorized) {
+    wx.showToast({
+      title: '请点击上方头像按钮授权',
+      icon: 'none'
+    })
+  },
+
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail
+    if (avatarUrl) {
+      this.uploadAvatar(avatarUrl)
+    }
+  },
+
+  onAvatarTap(e) {
+    this.onChooseAvatar(e)
+  },
+
+  uploadAvatar(tempFilePath) {
+    const app = getApp()
+    wx.showLoading({ title: '上传中...' })
+    
+    const cloudPath = 'avatars/' + (app.globalData.openid || 'unknown') + '/' + Date.now() + '.png'
+    
+    wx.cloud.uploadFile({
+      cloudPath: cloudPath,
+      filePath: tempFilePath,
+      success: (uploadRes) => {
+        const fileID = uploadRes.fileID
+        this.updateUserInfo({ avatarUrl: fileID })
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        wx.showToast({ title: '上传失败', icon: 'none' })
+        console.error('上传头像失败:', err)
+      }
+    })
+  },
+
+  onGenerateAvatar() {
+    const { isAdmin, avatarGenerateCount, canGenerateAvatar } = this.data
+    
+    if (!canGenerateAvatar) {
+      wx.showToast({ title: '生成次数已用完', icon: 'none' })
+      return
+    }
+
+    const { userInfo } = this.data
+    const nickName = userInfo?.nickName || '用户'
+    const prompt = `一个可爱的动漫风格头像，年轻人头像，简约风格，精致五官，${nickName}的头像，清晰面部，干净背景，高质量`
+
+    wx.showLoading({ title: 'AI正在生成头像' })
+
+    wx.cloud.callFunction({
+      name: 'generateImage-XuMMNR',
+      data: { prompt: prompt },
+      success: (res) => {
+        wx.hideLoading()
+        const result = res.result
+
+        if (result && result.success && result.imageUrl) {
+          this.uploadGeneratedAvatar(result.imageUrl)
+        } else {
+          wx.showToast({ title: result?.message || '生成失败', icon: 'none' })
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        console.error('生成头像失败:', err)
+        wx.showToast({ title: '生成失败，请稍后重试', icon: 'none' })
+      }
+    })
+  },
+
+  uploadGeneratedAvatar(imageUrl) {
+    wx.showLoading({ title: '保存中...' })
+    
+    if (imageUrl && imageUrl.startsWith('http')) {
+      const { isAdmin, avatarGenerateCount } = this.data
+      const newCount = isAdmin ? 0 : avatarGenerateCount + 1
+      
+      wx.setStorageSync('avatarGenerateCount', newCount)
+      
+      this.setData({
+        avatarGenerateCount: newCount,
+        canGenerateAvatar: isAdmin || newCount < 3
+      })
+      
+      this.updateUserInfo({ avatarUrl: imageUrl })
+      wx.hideLoading()
       return
     }
     
-    app.getUserProfile((success) => {
-      if (success) {
+    const cloudPath = 'avatars/' + Date.now() + '.png'
+    
+    wx.cloud.uploadFile({
+      cloudPath: cloudPath,
+      filePath: imageUrl,
+      success: (uploadRes) => {
+        const fileID = uploadRes.fileID
+        
+        const { isAdmin, avatarGenerateCount } = this.data
+        const newCount = isAdmin ? 0 : avatarGenerateCount + 1
+        
+        wx.setStorageSync('avatarGenerateCount', newCount)
+        
         this.setData({
-          userInfo: app.globalData.userInfo,
-          isAuthorized: true
+          avatarGenerateCount: newCount,
+          canGenerateAvatar: isAdmin || newCount < 3
         })
-        this.loadAppointments()
-        this.loadFavorites()
-        wx.showToast({ title: '授权成功', icon: 'success' })
+        
+        this.updateUserInfo({ avatarUrl: fileID })
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        wx.showToast({ title: '保存失败', icon: 'none' })
+        console.error('保存头像失败:', err)
+      }
+    })
+  },
+
+  onNicknameInput(e) {
+    const { nickName } = e.detail
+    if (nickName && nickName.trim()) {
+      this.updateUserInfo({ nickName: nickName.trim() })
+    }
+  },
+
+  updateUserInfo(newInfo) {
+    const currentUserInfo = this.data.userInfo
+    const updatedUserInfo = { ...currentUserInfo, ...newInfo }
+    
+    this.setData({ userInfo: updatedUserInfo })
+    wx.setStorageSync('userInfo', updatedUserInfo)
+    wx.showLoading({ title: '同步中...' })
+    
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: {
+        action: 'setUserInfo',
+        nickName: updatedUserInfo.nickName || '',
+        avatarUrl: updatedUserInfo.avatarUrl || ''
+      },
+      success: (res) => {
+        wx.hideLoading()
+        if (res.result && res.result.success) {
+          wx.showToast({ title: '已同步到云端', icon: 'success' })
+        } else {
+          wx.showToast({ title: '更新成功', icon: 'success' })
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        console.error('同步用户信息到云端失败:', err)
+        wx.showToast({ title: '更新成功', icon: 'success' })
       }
     })
   },
@@ -271,5 +530,67 @@ Page({
       cancelled: 'status-cancelled'
     }
     return map[status] || ''
+  },
+
+  onInitDishData() {
+    wx.showLoading({ title: '初始化中...' })
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: { action: 'initData' },
+      success: (res) => {
+        wx.hideLoading()
+        console.log('initData result:', res)
+        if (res.result && res.result.success) {
+          wx.showToast({
+            title: `成功初始化 ${res.result.count} 个菜品`,
+            icon: 'success'
+          })
+        } else {
+          wx.showToast({ title: '初始化失败: ' + (res.result?.error || '未知错误'), icon: 'none', duration: 3000 })
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        console.error('initData fail:', err)
+        wx.showToast({ title: '初始化失败: ' + (err.errMsg || '网络错误'), icon: 'none', duration: 3000 })
+      }
+    })
+  },
+
+  onClearData() {
+    wx.showModal({
+      title: '确认清空',
+      content: '将清空所有用户的收藏和预约数据，确定要继续吗？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.showLoading({ title: '正在清空...' })
+          wx.cloud.callFunction({
+            name: 'foodApi',
+            data: { action: 'clearData' },
+            success: (res) => {
+              wx.clearStorageSync()
+              app.globalData.userInfo = null
+              app.globalData.isAuthorized = false
+              wx.hideLoading()
+              if (res.result.success) {
+                wx.showToast({
+                  title: `已清空所有数据`,
+                  icon: 'success'
+                })
+                setTimeout(() => {
+                  wx.reLaunch({ url: '/pages/index/index' })
+                }, 1500)
+              } else {
+                wx.showToast({ title: '清空失败', icon: 'none' })
+              }
+            },
+            fail: () => {
+              wx.hideLoading()
+              wx.showToast({ title: '清空失败', icon: 'none' })
+            }
+          })
+        }
+      }
+    })
   }
 })

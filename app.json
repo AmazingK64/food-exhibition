@@ -13,6 +13,7 @@
     "pages/recipe-list/recipe-list",
     "pages/recipe-detail/recipe-detail"
   ],
+  "libVersion": "3.7.1",
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",

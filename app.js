@@ -27,6 +27,20 @@ App({
     envId: config.envId
   },
 
+  onShareAppMessage() {
+    return {
+      title: '美食展 - 探索美味菜谱',
+      path: '/pages/index/index'
+    }
+  },
+
+  onShareTimeline() {
+    return {
+      title: '美食展 - 探索美味菜谱',
+      query: ''
+    }
+  },
+
   checkAuth() {
     const userInfo = wx.getStorageSync('userInfo')
     if (userInfo) {
