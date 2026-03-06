@@ -5,6 +5,7 @@ Page({
     favorited: false,
     uploading: false,
     isAuthorized: false,
+    isAdmin: false,
     displayImages: [],
     currentImageIndex: 0
   },
@@ -12,11 +13,32 @@ Page({
   onLoad(options) {
     this.initCloud()
     this.checkAuth()
+    this.fetchUserInfo()
+    
     const id = options.id
     if (id) {
       this.loadDish(id)
       this.checkFavoriteStatus(id)
     }
+  },
+
+  fetchUserInfo() {
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: { action: 'getUserInfo' },
+      success: (res) => {
+        const result = res.result
+        if (result && result.success && result.data) {
+          const isAdmin = result.data.isAdmin || false
+          wx.setStorageSync('isAdmin', isAdmin)
+          this.setData({ isAdmin: isAdmin })
+        }
+      },
+      fail: (err) => {
+        const isAdmin = wx.getStorageSync('isAdmin') || false
+        this.setData({ isAdmin: isAdmin })
+      }
+    })
   },
 
   checkFavoriteStatus(id) {
