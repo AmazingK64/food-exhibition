@@ -33,7 +33,7 @@
         "selectedIconPath": "assets/icons/home-active.png"
       },
       {
-        "pagePath": "pages/dishes/dishes",
+        "pagePath": "pages/recipe-list/recipe-list",
         "text": "菜谱",
         "iconPath": "assets/icons/dish.png",
         "selectedIconPath": "assets/icons/dish-active.png"

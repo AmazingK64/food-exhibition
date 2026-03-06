@@ -143,3 +143,21 @@
   font-size: 28rpx;
   padding: 60rpx 0;
 }
+
+.auth-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+}
+
+.auth-icon {
+  font-size: 80rpx;
+  margin-bottom: 30rpx;
+}
+
+.auth-text {
+  font-size: 30rpx;
+  color: #666;
+}

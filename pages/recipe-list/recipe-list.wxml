@@ -4,69 +4,76 @@
     <text class="subtitle">程序员做饭指南</text>
   </view>
 
-  <view class="search-box">
-    <input class="search-input" 
-           placeholder="搜索菜谱..." 
-           value="{{searchKeyword}}"
-           bindinput="onSearchInput"
-           bindconfirm="onSearch"/>
-    <view class="search-btn" bindtap="onSearch">搜索</view>
-  </view>
-
-  <view class="filter-row">
-    <view class="filter-item">
-      <picker mode="selector" range="{{difficultyList}}" range-key="label" bindchange="onDifficultyChange">
-        <view class="filter-picker">
-          <text>{{selectedDifficulty ? selectedDifficulty + '星' : '难度'}}</text>
-          <text class="arrow">▼</text>
-        </view>
-      </picker>
+  <view wx:if="{{isAdmin}}">
+    <view class="search-box">
+      <input class="search-input" 
+             placeholder="搜索菜谱..." 
+             value="{{searchKeyword}}"
+             bindinput="onSearchInput"
+             bindconfirm="onSearch"/>
+      <view class="search-btn" bindtap="onSearch">搜索</view>
     </view>
-    <view class="filter-item">
-      <picker mode="selector" range="{{categoryList}}" bindchange="onCategoryChange">
-        <view class="filter-picker">
-          <text>{{selectedCategory || '类型'}}</text>
-          <text class="arrow">▼</text>
-        </view>
-      </picker>
-    </view>
-    <view class="filter-reset" bindtap="onResetFilter">重置</view>
-  </view>
 
-  <view class="search-result" wx:if="{{searchResult.length > 0}}">
-    <view class="section-title">搜索结果 <text class="count">{{searchResult.length}}</text></view>
-    <view class="recipe-grid">
+    <view class="filter-row">
+      <view class="filter-item">
+        <picker mode="selector" range="{{difficultyList}}" range-key="label" bindchange="onDifficultyChange">
+          <view class="filter-picker">
+            <text>{{selectedDifficulty ? selectedDifficulty + '星' : '难度'}}</text>
+            <text class="arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      <view class="filter-item">
+        <picker mode="selector" range="{{categoryList}}" bindchange="onCategoryChange">
+          <view class="filter-picker">
+            <text>{{selectedCategory || '类型'}}</text>
+            <text class="arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      <view class="filter-reset" bindtap="onResetFilter">重置</view>
+    </view>
+
+    <view class="search-result" wx:if="{{searchResult.length > 0}}">
+      <view class="section-title">搜索结果 <text class="count">{{searchResult.length}}</text></view>
+      <view class="recipe-grid">
+        <view class="recipe-card" 
+              wx:for="{{searchResult}}" 
+              wx:key="name"
+              bindtap="onRecipeTap"
+              data-name="{{item.name}}">
+          <text class="recipe-name">{{item.name}}</text>
+          <text class="recipe-difficulty">{{item.difficulty}}星</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-title" wx:if="{{currentRecipes.length > 0}}">
+      <text>{{filteredTitle}}</text>
+      <text class="count">{{currentRecipes.length}}</text>
+    </view>
+    
+    <view class="recipe-grid" wx:if="{{currentRecipes.length > 0 && searchResult.length === 0}}">
       <view class="recipe-card" 
-            wx:for="{{searchResult}}" 
+            wx:for="{{currentRecipes}}" 
             wx:key="name"
             bindtap="onRecipeTap"
             data-name="{{item.name}}">
         <text class="recipe-name">{{item.name}}</text>
-        <text class="recipe-difficulty">{{item.difficulty}}星</text>
+        <view class="recipe-meta">
+          <text class="recipe-difficulty">{{item.difficulty}}星</text>
+          <text class="recipe-category">{{item.category}}</text>
+        </view>
       </view>
+    </view>
+
+    <view wx:if="{{currentRecipes.length === 0 && searchResult.length === 0}}" class="empty-tip">
+      <text>暂无菜谱，请尝试其他筛选条件</text>
     </view>
   </view>
 
-  <view class="section-title" wx:if="{{currentRecipes.length > 0}}">
-    <text>{{filteredTitle}}</text>
-    <text class="count">{{currentRecipes.length}}</text>
-  </view>
-  
-  <view class="recipe-grid" wx:if="{{currentRecipes.length > 0 && searchResult.length === 0}}">
-    <view class="recipe-card" 
-          wx:for="{{currentRecipes}}" 
-          wx:key="name"
-          bindtap="onRecipeTap"
-          data-name="{{item.name}}">
-      <text class="recipe-name">{{item.name}}</text>
-      <view class="recipe-meta">
-        <text class="recipe-difficulty">{{item.difficulty}}星</text>
-        <text class="recipe-category">{{item.category}}</text>
-      </view>
-    </view>
-  </view>
-
-  <view wx:if="{{currentRecipes.length === 0 && searchResult.length === 0}}" class="empty-tip">
-    <text>暂无菜谱，请尝试其他筛选条件</text>
+  <view wx:else class="auth-prompt">
+    <view class="auth-icon">🔒</view>
+    <view class="auth-text">仅管理员可见</view>
   </view>
 </view>

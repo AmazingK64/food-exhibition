@@ -12,11 +12,32 @@ Page({
     activeCategory: '全部',
     featuredFoods: [],
     loading: true,
-    showSwiper: false
+    showSwiper: false,
+    isAdmin: false
   },
 
   onLoad() {
     this.loadFoods()
+    this.fetchUserInfo()
+  },
+
+  fetchUserInfo() {
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: { action: 'getUserInfo' },
+      success: (res) => {
+        const result = res.result
+        if (result && result.success && result.data) {
+          const isAdmin = result.data.isAdmin || false
+          wx.setStorageSync('isAdmin', isAdmin)
+          this.setData({ isAdmin: isAdmin })
+        }
+      },
+      fail: (err) => {
+        const isAdmin = wx.getStorageSync('isAdmin') || false
+        this.setData({ isAdmin: isAdmin })
+      }
+    })
   },
 
   onShow() {

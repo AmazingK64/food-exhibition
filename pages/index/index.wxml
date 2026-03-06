@@ -13,7 +13,7 @@
     </swiper-item>
   </swiper>
 
-  <view class="section">
+  <view class="section" >
     <view class="section-header" bindtap="showSwiper">
       <text class="section-title">菜系分类</text>
       <text class="section-more" bindtap="onMoreTap">更多 ></text>
@@ -30,12 +30,12 @@
     </scroll-view>
   </view>
 
-  <view class="section">
+  <view class="section" >
     <view class="section-header" wx:if="{{false}}">
       <text class="section-title">热门菜品</text>
     </view>
     <view wx:if="{{loading}}" class="loading">加载中...</view>
-    <view wx:else class="food-grid">
+    <view wx:elif="{{isAdmin}}" class="food-grid">
       <view 
         wx:for="{{featuredFoods}}" 
         wx:key="_id"
@@ -52,6 +52,10 @@
           </view>
         </view>
       </view>
+    </view>
+    <view wx:else class="auth-prompt">
+      <view class="auth-icon">🔒</view>
+      <view class="auth-text">仅管理员可见</view>
     </view>
   </view>
 </view>

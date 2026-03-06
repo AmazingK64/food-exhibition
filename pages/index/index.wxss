@@ -160,3 +160,24 @@
   padding: 40rpx;
   color: #999;
 }
+
+.auth-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  margin: 20rpx;
+}
+
+.auth-icon {
+  font-size: 80rpx;
+  margin-bottom: 30rpx;
+}
+
+.auth-text {
+  font-size: 30rpx;
+  color: #666;
+}

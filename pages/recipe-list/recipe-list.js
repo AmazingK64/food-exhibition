@@ -6,6 +6,7 @@ Page({
     searchKeyword: '',
     searchResult: [],
     filteredTitle: '',
+    isAdmin: false,
     difficultyList: [
       { level: 1, stars: '⭐', label: '1星难度' },
       { level: 2, stars: '⭐⭐', label: '2星难度' },
@@ -375,6 +376,26 @@ Page({
 
   onLoad() {
     this.loadRandomRecipes()
+    this.fetchUserInfo()
+  },
+
+  fetchUserInfo() {
+    wx.cloud.callFunction({
+      name: 'foodApi',
+      data: { action: 'getUserInfo' },
+      success: (res) => {
+        const result = res.result
+        if (result && result.success && result.data) {
+          const isAdmin = result.data.isAdmin || false
+          wx.setStorageSync('isAdmin', isAdmin)
+          this.setData({ isAdmin: isAdmin })
+        }
+      },
+      fail: (err) => {
+        const isAdmin = wx.getStorageSync('isAdmin') || false
+        this.setData({ isAdmin: isAdmin })
+      }
+    })
   },
 
   loadRandomRecipes() {
