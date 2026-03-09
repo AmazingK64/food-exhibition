@@ -268,49 +268,53 @@ Page({
     })
   },
 
-  uploadGeneratedAvatar(imageUrl) {
-    wx.showLoading({ title: '保存中...' })
-    
-    if (imageUrl && imageUrl.startsWith('http')) {
-      const { isAdmin, avatarGenerateCount } = this.data
-      const newCount = isAdmin ? 0 : avatarGenerateCount + 1
-      
-      wx.setStorageSync('avatarGenerateCount', newCount)
-      
-      this.setData({
-        avatarGenerateCount: newCount,
-        canGenerateAvatar: isAdmin || newCount < 3
-      })
-      
-      this.updateUserInfo({ avatarUrl: imageUrl })
-      wx.hideLoading()
-      return
-    }
-    
-    const cloudPath = 'avatars/' + Date.now() + '.png'
-    
-    wx.cloud.uploadFile({
-      cloudPath: cloudPath,
-      filePath: imageUrl,
-      success: (uploadRes) => {
-        const fileID = uploadRes.fileID
-        
-        const { isAdmin, avatarGenerateCount } = this.data
-        const newCount = isAdmin ? 0 : avatarGenerateCount + 1
-        
-        wx.setStorageSync('avatarGenerateCount', newCount)
-        
-        this.setData({
-          avatarGenerateCount: newCount,
-          canGenerateAvatar: isAdmin || newCount < 3
-        })
-        
-        this.updateUserInfo({ avatarUrl: fileID })
+  uploadGeneratedAvatar(ossUrl) {
+    wx.showLoading({ title: '正在保存到云端...' })
+
+    wx.downloadFile({
+      url: ossUrl,
+      success: (downloadRes) => {
+        if (downloadRes.statusCode === 200) {
+          const tempFilePath = downloadRes.tempFilePath
+          const fileName = `avatar_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`
+          const cloudPath = `avatars/${fileName}`
+          
+          wx.cloud.uploadFile({
+            cloudPath: cloudPath,
+            filePath: tempFilePath,
+            success: (uploadRes) => {
+              const cloudFileID = uploadRes.fileID
+              console.log('上传成功, fileID:', cloudFileID)
+              
+              const { isAdmin, avatarGenerateCount } = this.data
+              const newCount = isAdmin ? 0 : avatarGenerateCount + 1
+              
+              wx.setStorageSync('avatarGenerateCount', newCount)
+              
+              this.setData({
+                avatarGenerateCount: newCount,
+                canGenerateAvatar: isAdmin || newCount < 3
+              })
+              
+              this.updateUserInfo({ avatarUrl: cloudFileID })
+              wx.hideLoading()
+              wx.showToast({ title: '保存成功！', icon: 'success' })
+            },
+            fail: (uploadErr) => {
+              console.error('上传到云存储失败:', uploadErr)
+              wx.hideLoading()
+              wx.showToast({ title: '保存失败', icon: 'none' })
+            }
+          })
+        } else {
+          wx.hideLoading()
+          wx.showToast({ title: '下载图片失败', icon: 'none' })
+        }
       },
-      fail: (err) => {
+      fail: (downloadErr) => {
+        console.error('下载图片失败:', downloadErr)
         wx.hideLoading()
-        wx.showToast({ title: '保存失败', icon: 'none' })
-        console.error('保存头像失败:', err)
+        wx.showToast({ title: '下载图片失败', icon: 'none' })
       }
     })
   },

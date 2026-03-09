@@ -31,9 +31,6 @@
   </view>
 
   <view class="section" >
-    <view class="section-header" wx:if="{{false}}">
-      <text class="section-title">热门菜品</text>
-    </view>
     <view wx:if="{{loading}}" class="loading">加载中...</view>
     <view wx:elif="{{showContent}}" class="food-grid">
       <view 

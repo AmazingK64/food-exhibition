@@ -235,18 +235,12 @@ Page({
       data: { prompt: prompt },
       success: (res) => {
         console.log('生成成功:', res)
-        wx.hideLoading()
         const result = res.result
 
         if (result && result.success && result.imageUrl) {
-          const newImageUrl = result.imageUrl
-          const { displayImages } = this.data
-          const newImages = [newImageUrl, ...displayImages]
-          
-          this.updateDishImages(newImages, 0)
-          this.setData({ uploading: false })
-          wx.showToast({ title: '生成并保存成功！', icon: 'success' })
+          this.downloadAndUpload(result.imageUrl, 'dish')
         } else {
+          wx.hideLoading()
           this.setData({ uploading: false })
           wx.showToast({ title: result?.message || '生成失败', icon: 'none' })
         }
@@ -256,6 +250,54 @@ Page({
         wx.hideLoading()
         this.setData({ uploading: false })
         wx.showToast({ title: '生成失败：' + (err.errMsg || '未知错误'), icon: 'none', duration: 3000 })
+      }
+    })
+  },
+
+  downloadAndUpload(ossUrl, type) {
+    wx.showLoading({ title: '正在保存到云端...' })
+
+    wx.downloadFile({
+      url: ossUrl,
+      success: (downloadRes) => {
+        if (downloadRes.statusCode === 200) {
+          const tempFilePath = downloadRes.tempFilePath
+          const fileName = `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`
+          const cloudPath = type === 'avatar' ? `avatars/${fileName}` : `dish-images/${fileName}`
+          
+          wx.cloud.uploadFile({
+            cloudPath: cloudPath,
+            filePath: tempFilePath,
+            success: (uploadRes) => {
+              const cloudFileID = uploadRes.fileID
+              console.log('上传成功, fileID:', cloudFileID)
+              
+              const { displayImages } = this.data
+              const newImages = [cloudFileID, ...displayImages]
+              
+              this.updateDishImages(newImages, 0)
+              this.setData({ uploading: false })
+              wx.hideLoading()
+              wx.showToast({ title: '保存成功！', icon: 'success' })
+            },
+            fail: (uploadErr) => {
+              console.error('上传到云存储失败:', uploadErr)
+              wx.hideLoading()
+              this.setData({ uploading: false })
+              wx.showToast({ title: '保存失败', icon: 'none' })
+            }
+          })
+        } else {
+          wx.hideLoading()
+          this.setData({ uploading: false })
+          wx.showToast({ title: '下载图片失败', icon: 'none' })
+        }
+      },
+      fail: (downloadErr) => {
+        console.error('下载图片失败:', downloadErr)
+        wx.hideLoading()
+        this.setData({ uploading: false })
+        wx.showToast({ title: '下载图片失败', icon: 'none' })
       }
     })
   },

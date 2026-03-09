@@ -6,16 +6,20 @@ Page({
     content: [],
     loading: true,
     isAuthorized: false,
-    isAdmin: false
+    isAdmin: false,
+    showContent: false
   },
 
   onLoad(options) {
+    const app = getApp()
     const userInfo = wx.getStorageSync('userInfo')
     const isAdmin = wx.getStorageSync('isAdmin') || false
+    const inAuditWindow = app.isInAuditWindow()
     
     this.setData({
       isAuthorized: !!userInfo,
-      isAdmin: isAdmin
+      isAdmin: isAdmin,
+      showContent: isAdmin || !inAuditWindow
     })
     
     const name = decodeURIComponent(options.name || '')
